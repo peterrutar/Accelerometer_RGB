@@ -1,0 +1,47 @@
+#include <Wire.h>
+#include <Adafruit_ADXL362.h>
+
+Adafruit_ADXL362 accel = Adafruit_ADXL362();
+
+void setup() {
+  // Start I2C communication
+  Wire.begin();
+  
+  // Initialize accelerometer
+  accel.begin();
+  
+  // Set range to 2g
+  accel.setRange(ADXL362_RANGE_2G);
+  
+  // Set activity threshold to 50 mg (0.05 g)
+  accel.setActivityThreshold(50);
+  
+  // Enable activity interrupt
+  accel.setActivityInterrupt(1);
+  
+  // Enable measurement mode
+  accel.setPowerControl(ADXL362_MEASURE);
+  
+  // Enable pin change interrupt on INT1 (pin 3)
+  PCICR |= (1 << PCIE1);
+  PCMSK1 |= (1 << PCINT11);
+  
+  // Set INT1 as input
+  pinMode(3, INPUT);
+  
+  // Enable global interrupts
+  sei();
+}
+
+void loop() {
+  // The program will wake up here when the accelerometer shakes
+  // Do something here
+}
+
+ISR(PCINT1_vect) {
+  // INT1 pin state
+  if (digitalRead(3)) {
+    // Wake up from sleep
+    // Do something here
+  }
+}
